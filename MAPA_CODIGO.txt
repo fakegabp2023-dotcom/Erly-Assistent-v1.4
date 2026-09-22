@@ -1,0 +1,153 @@
+CHATBOTERLY 1.2.5 — MAPA DE CÓDIGO
+
+app.py
+- Servidor Flask y endpoint /chat.
+- Detección directa de acciones web.
+- Mantener intacto salvo cambios específicos del backend.
+
+memory.py
+- Memoria persistente mediante SQLite.
+
+web_tools.py
+- Definición y apoyo de acciones web.
+
+memory.db
+- Base de datos de memoria de Erly.
+
+index.html
+- Estructura principal de la interfaz.
+- Avatar: torso body.png + rostro + manos flotantes.
+- Sensor de cámara conservado pero oculto/desactivado.
+- Carga face.js, permissions.js y chat.js.
+
+style.css
+- Diseño general.
+- Rostro programado.
+- Posicionamiento y apariencia del torso.
+- Manos flotantes tipo Wii.
+- Responsive móvil.
+- En 1.2.4.2 se corrigió la composición del avatar para evitar solapamientos.
+
+face.js
+- Rostro, mirada, parpadeo y emociones.
+- SENSOR_ENABLED = false.
+- Sensor MediaPipe conservado para futuro.
+- Sistema de manos virtuales.
+- window.ErlyHands: API pública para poses y movimiento.
+
+chat.js
+- Envío de mensajes.
+- Reconocimiento de voz.
+- Voz de Erly.
+- Emociones según respuesta.
+- Selección de pose de las manos.
+- Solicitud de permiso para acciones web.
+
+permissions.js
+- Panel de autorización.
+- requestPermission() → muestra permiso.
+- executeAction() → ejecuta acciones autorizadas.
+- allowPermission → autorización y ejecución.
+- denyPermission → cancelación.
+
+body.png
+- Torso/busto visual de Erly.
+- PNG recortado para eliminar márgenes transparentes excesivos del archivo original.
+- Se mantiene el mismo nombre para no romper referencias existentes.
+
+CAMBIO 1.2.4.2 — AVATAR
+- Se eliminó la duplicación accidental de .avatar-stage y de la mano izquierda en index.html.
+- Se dejó una sola mano izquierda, una sola mano derecha, un solo rostro y un solo torso.
+- El torso ahora queda detrás del rostro y las manos delante del torso.
+- Se corrigió el posicionamiento móvil de las manos: ya no se pegan a los extremos de la pantalla.
+- Se ajustó el escenario vertical para que el torso tenga espacio.
+- body.png fue recortado a su contenido visible manteniendo transparencia.
+- Se añadió versionado ?v=1.2.4.2 al CSS para evitar caché del navegador.
+
+IMPORTANTE
+- No modificar chat.js innecesariamente: anteriormente una modificación rompió Enviar y micrófono.
+- No reactivar el sensor de cámara/manos todavía.
+- No cambiar el sistema de acciones web que ya funciona para WhatsApp, Telegram, Instagram y TikTok salvo que una prueba específica lo requiera.
+- El torso ya está integrado en esta versión; futuras mejoras deben partir de esta composición.
+
+
+NOVEDADES 1.2.5 — EXPRESIVIDAD
+- face.js → cejas dinámicas: micro-movimientos naturales y movimiento durante el habla.
+- face.js → nuevas poses de manos: thumbup y gestos coordinados por lado.
+- index.html → cada mano tiene 4 dedos + pulgar.
+- style.css → manos reposicionadas a la altura aproximada de los hombros y estilos del pulgar.
+- chat.js → gestos iniciales según el mensaje del usuario: saludo, aprobación y pensamiento.
+- No se añadieron brazos.
+- Sensor de cámara/manos sigue desactivado.
+
+
+NOVEDADES 1.2.6 — GESTOS VISIBLES DE MANOS
+- face.js → los gestos ahora mueven la mano completa mediante animaciones JS interpoladas.
+- face.js → saludo, pensamiento, señalar, pulgar arriba, sorpresa, felicidad y habla tienen desplazamiento, rotación y escala visibles.
+- face.js → las manos vuelven suavemente a la posición de reposo después del gesto.
+- style.css → manos bajadas aproximadamente a la altura de los hombros y acercadas a la zona lateral del torso.
+- style.css → el movimiento natural de reposo es más sutil para no competir con los gestos.
+- index.html → versionado CSS actualizado a 1.2.6 para evitar caché.
+- No se añadieron brazos.
+- Sensor de cámara/manos sigue desactivado.
+
+
+============================================================
+CHATBOTERLY 1.3.0 — MEJORAS
+============================================================
+- Nueva búsqueda directa en TikTok: “busca X en TikTok”.
+- Personalidad/respuestas preparadas para estados emocionales y gestos.
+- Gestos visibles acompañan saludo, análisis, sorpresa, aprobación y explicación.
+- Voz con velocidad/tono configurables y animación de boca durante el habla.
+- Memoria puede activarse/desactivarse desde Configuración; memorias explícitas se clasifican.
+- Panel de Configuración: voz, gestos, animaciones, memoria, velocidad y tono.
+- Manos base más bajas, a los lados del torso.
+- Gesto “thinking” eleva temporalmente la mano por delante del rostro y luego la devuelve.
+- Sensor de cámara/mano sigue conservado pero DESACTIVADO.
+- Se conservan chat, micrófono, voz, memoria y acciones web existentes.
+
+
+============================================================
+CHATBOTERLY 1.3.2
+============================================================
+
+NUEVO:
+- Panel de chat opcional mediante el botón "CHAT".
+- El historial de mensajes se muestra solo cuando el usuario activa el panel.
+- Las respuestas de Erly aparecen progresivamente en el panel, simulando escritura.
+- Botón para limpiar la conversación visible.
+- Se conserva el chat de backend, voz, memoria, emociones y gestos.
+
+TIKTOK:
+- search_tiktok conserva la detección de "busca X en TikTok".
+- `search_tiktok` prueba primero una apertura mediante esquema nativo `snssdk1233://search?...`.
+- Después prueba un App Link HTTPS dirigido al paquete de TikTok.
+- Si ninguno de los dos mecanismos consigue abrir la búsqueda nativa, se usa como último respaldo la búsqueda web de TikTok.
+- La ruta nativa de búsqueda no está documentada oficialmente por TikTok; esta implementación se mantiene como prueba controlada y no altera las demás acciones.
+- No se redirige intencionadamente a Google.
+
+NOTA TÉCNICA:
+TikTok documenta integración Android mediante OpenSDK y reconoce los paquetes
+com.zhiliaoapp.musically y com.ss.android.ugc.trill para escenarios Android.
+La búsqueda interna por texto no está documentada como una API pública; por eso
+la versión 1.3.2 usa intento nativo + respaldo web.
+
+
+=== ERLY 1.4 ALPHA — MIGRACIÓN ANDROID ===
+- android/: proyecto base Android Studio.
+- AndroidBridge: puente inicial JavaScript -> Android.
+- Interfaz web existente conservada como assets.
+- Flask/Python conservado; integración backend pendiente.
+- No se implementa todavía control total del dispositivo.
+
+
+==================================================
+ERLY 1.4 ALPHA — 2026-09-22 — CORRECCIÓN DE RECURSOS ANDROID
+==================================================
+
+- Se corrigió únicamente la copia Android de `android/app/src/main/assets/erly/index.html`.
+- Se reemplazaron las rutas Flask/Jinja `{{ url_for(...) }}` por rutas relativas `static/...` compatibles con WebView/Android assets.
+- Se corrigieron las referencias Android al CSS, body.png y los cuatro JavaScript principales.
+- El `templates/index.html` original NO se modificó, para conservar la versión Flask.
+- No se modificaron todavía `chat.js`, `app.py`, memoria, voz ni AndroidBridge.
+- El siguiente objetivo después de comprobar la interfaz es adaptar la comunicación `/chat` y la integración nativa.

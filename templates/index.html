@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <title>ErlyChatBot 1.3.0</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}?v=1.2.6"
+    >
+
+    <!--
+        =====================================================
+        SENSOR DE MANO — CONSERVADO PERO DESACTIVADO
+
+        MediaPipe permanece declarado para poder recuperar
+        el sensor en una versión futura.
+
+        face.js utiliza SENSOR_ENABLED = false.
+        =====================================================
+    -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+</head>
+
+<body>
+
+    <main class="app">
+
+        <!-- =========================
+             FONDO AMBIENTAL
+        ========================== -->
+
+        <div class="ambient ambient-one"></div>
+        <div class="ambient ambient-two"></div>
+
+
+        <!-- =========================
+             CABECERA
+        ========================== -->
+
+        <header class="topbar">
+
+            <div>
+                <div class="assistant-name">
+                    ASISTENTE
+                </div>
+
+                <div class="assistant-status">
+                    <span id="statusDot"></span>
+                    <span id="statusText">
+                        EN LÍNEA
+                    </span>
+                </div>
+            </div>
+
+            <button id="settingsBtn" class="settings-button" type="button" aria-label="Configuración">⚙</button>
+
+            <button id="chatToggleBtn" class="chat-toggle-button" type="button" aria-expanded="false" aria-controls="chatMessages">💬 CHAT</button>
+
+            <!--
+                Sensor conservado en HTML pero oculto.
+                No se elimina para poder recuperarlo después.
+            -->
+
+            <button
+                id="cameraBtn"
+                class="camera-button sensor-disabled"
+                type="button"
+                aria-hidden="true"
+            >
+                👁 SENSOR
+            </button>
+
+        </header>
+
+
+        <!-- =========================
+             AVATAR
+        ========================== -->
+
+        <section class="avatar-section">
+
+            <div class="avatar-stage">
+
+                <!-- CUERPO / TORSO -->
+                <img
+                    src="{{ url_for('static', filename='body.png') }}"
+                    id="robotBody"
+                    class="robot-body"
+                    alt="Cuerpo de Erly"
+                >
+
+                <!-- MANO IZQUIERDA -->
+                <div
+                    class="floating-hand hand-left"
+                    id="leftHand"
+                    aria-hidden="true"
+                >
+                    <div class="hand-finger finger-1"></div>
+                    <div class="hand-finger finger-2"></div>
+                    <div class="hand-finger finger-3"></div>
+                    <div class="hand-finger finger-4"></div>
+                    <div class="hand-thumb"></div>
+                    <div class="hand-palm"></div>
+                </div>
+
+                <!-- ROSTRO -->
+                <div class="avatar-ring">
+                    <div class="face" id="face">
+                        <div class="eyebrow eyebrow-left"></div>
+                        <div class="eyebrow eyebrow-right"></div>
+
+                        <div class="eye eye-left">
+                            <div class="pupil"></div>
+                        </div>
+
+                        <div class="eye eye-right">
+                            <div class="pupil"></div>
+                        </div>
+
+                        <div class="mouth" id="mouth"></div>
+                    </div>
+                </div>
+
+                <!-- MANO DERECHA -->
+                <div
+                    class="floating-hand hand-right"
+                    id="rightHand"
+                    aria-hidden="true"
+                >
+                    <div class="hand-finger finger-1"></div>
+                    <div class="hand-finger finger-2"></div>
+                    <div class="hand-finger finger-3"></div>
+                    <div class="hand-finger finger-4"></div>
+                    <div class="hand-thumb"></div>
+                    <div class="hand-palm"></div>
+                </div>
+
+            </div>
+
+            <div class="state" id="stateText">
+                Neutral
+            </div>
+
+        </section>
+
+        <!-- =========================
+             VIDEO DEL SENSOR
+             CONSERVADO PERO OCULTO
+        ========================== -->
+
+        <video
+            id="webcam"
+            autoplay
+            playsinline
+            muted
+        ></video>
+
+
+        <!-- =========================
+             EMOCIONES
+        ========================== -->
+
+        <section class="emotion-panel">
+
+            <button data-emotion="neutral">
+                Neutral
+            </button>
+
+            <button data-emotion="happy">
+                Feliz
+            </button>
+
+            <button data-emotion="surprised">
+                Sorpresa
+            </button>
+
+            <button data-emotion="thinking">
+                Pensando
+            </button>
+
+            <button data-emotion="angry">
+                Serio
+            </button>
+
+            <button data-emotion="sad">
+                Triste
+            </button>
+
+        </section>
+
+
+        <!-- =========================
+             CHAT
+        ========================== -->
+
+        <section id="chatMessagesPanel" class="chat-messages-panel hidden" aria-label="Conversación de Erly">
+            <div class="chat-messages-header">
+                <span>CONVERSACIÓN</span>
+                <button id="clearChatBtn" type="button" aria-label="Limpiar conversación">Limpiar</button>
+            </div>
+            <div id="chatMessages" class="chat-messages" aria-live="polite"></div>
+        </section>
+
+
+        <section class="chat-area">
+
+            <div class="input-wrapper">
+
+                <input
+                    id="userInput"
+                    type="text"
+                    placeholder="Escribe o habla..."
+                    autocomplete="off"
+                >
+
+                <button
+                    id="voiceBtn"
+                    class="voice-button"
+                    type="button"
+                    aria-label="Hablar"
+                >
+                    🎙️
+                </button>
+
+                <button
+                    id="sendBtn"
+                    class="send-button"
+                    type="button"
+                >
+                    ➤
+                </button>
+
+            </div>
+
+            <div
+                id="voiceHint"
+                class="voice-hint"
+            >
+                Pulsa el micrófono para hablar
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             CONFIGURACIÓN DE ERLY 1.3.0
+        ========================== -->
+
+        <section id="settingsPanel" class="settings-panel hidden" aria-label="Configuración">
+            <div class="settings-card">
+                <div class="settings-title">CONFIGURACIÓN DE ERLY</div>
+
+                <label class="setting-row"><span>Voz</span><input id="settingVoice" type="checkbox" checked></label>
+                <label class="setting-row"><span>Gestos</span><input id="settingGestures" type="checkbox" checked></label>
+                <label class="setting-row"><span>Animaciones</span><input id="settingAnimations" type="checkbox" checked></label>
+                <label class="setting-row"><span>Memoria</span><input id="settingMemory" type="checkbox" checked></label>
+
+                <label class="setting-row range-row"><span>Velocidad de voz</span><input id="settingRate" type="range" min="0.7" max="1.3" step="0.05" value="1"></label>
+                <label class="setting-row range-row"><span>Tono de voz</span><input id="settingPitch" type="range" min="0.7" max="1.3" step="0.05" value="1"></label>
+
+                <button id="closeSettings" class="settings-close" type="button">Cerrar</button>
+            </div>
+        </section>
+
+        <!-- =========================
+             SOLICITUD DE PERMISO
+        ========================== -->
+
+        <section
+            id="permissionPanel"
+            class="permission-panel hidden"
+        >
+
+            <div class="permission-card">
+
+                <div class="permission-title">
+                    PERMISO DE ACCIÓN
+                </div>
+
+                <div
+                    class="permission-text"
+                    id="permissionText"
+                >
+                    Erly solicita permiso para realizar una acción.
+                </div>
+
+                <div class="permission-actions">
+
+                    <button
+                        id="denyPermission"
+                        class="permission-deny"
+                        type="button"
+                    >
+                        Cancelar
+                    </button>
+
+                    <button
+                        id="allowPermission"
+                        class="permission-allow"
+                        type="button"
+                    >
+                        Permitir
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================== -->
+
+    <script src="{{ url_for('static', filename='js/face.js') }}?v=1.3.2"></script>
+
+    <script src="{{ url_for('static', filename='js/permissions.js') }}?v=1.3.2"></script>
+
+    <script src="{{ url_for('static', filename='js/chat.js') }}?v=1.3.2"></script>
+    <script src="{{ url_for('static', filename='js/settings.js') }}?v=1.3.2"></script>
+
+</body>
+</html>

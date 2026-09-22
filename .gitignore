@@ -1,0 +1,6 @@
+.env
+*.apk
+build/
+.grade/
+__pycache__/
+*.pyc

@@ -1,0 +1,137 @@
+const face = document.getElementById('face');
+const leftEye = document.getElementById('left-eye');
+const rightEye = document.getElementById('right-eye');
+const mouth = document.getElementById('mouth');
+const pupils = document.querySelectorAll('.pupil');
+const videoElement = document.getElementById('webcam');
+const toggleBtn = document.getElementById('toggleCameraBtn');
+
+let currentEmotion = 'neutral';
+let cameraActive = false;
+let cameraInstance = null;
+
+// 1. Cambiar Expresiones
+function setEmotion(emotion) {
+    face.classList.remove('happy', 'surprised', 'thinking', 'angry', 'sad');
+    currentEmotion = emotion;
+    if (emotion !== 'neutral') {
+        face.classList.add(emotion);
+    }
+}
+
+// 2. Parpadeo Automático
+setInterval(() => {
+    leftEye.classList.add('blink');
+    rightEye.classList.add('blink');
+    setTimeout(() => {
+        leftEye.classList.remove('blink');
+        rightEye.classList.remove('blink');
+    }, 150);
+}, 4000);
+
+// 3. Mover pupilas hacia un punto específico (X, Y en pantalla)
+function movePupilsToTarget(targetX, targetY) {
+    if (currentEmotion === 'thinking') {
+        pupils.forEach(pupil => pupil.style.transform = 'translate(5px, -10px)');
+        return;
+    }
+
+    pupils.forEach(pupil => {
+        const eye = pupil.parentElement;
+        const rect = eye.getBoundingClientRect();
+        const eyeX = rect.left + rect.width / 2;
+        const eyeY = rect.top + rect.height / 2;
+
+        const angle = Math.atan2(targetY - eyeY, targetX - eyeX);
+        const distance = Math.min(10, Math.hypot(targetX - eyeX, targetY - eyeY) / 15);
+
+        const pupilX = Math.cos(angle) * distance;
+        const pupilY = Math.sin(angle) * distance;
+
+        pupil.style.transform = `translate(${pupilX}px, ${pupilY}px)`;
+    });
+}
+
+// 4. Mover pupilas con el Mouse (Default cuando la cámara no se usa)
+document.addEventListener('mousemove', (e) => {
+    if (!cameraActive) {
+        movePupilsToTarget(e.clientX, e.clientY);
+    }
+});
+
+// 5. Configurar MediaPipe Hands (Detección de Dedo / Mano)
+const hands = new Hands({
+    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+});
+
+hands.setOptions({
+    maxNumHands: 1,
+    modelComplexity: 1,
+    minDetectionConfidence: 0.5,
+    minTrackingConfidence: 0.5
+});
+
+// Se ejecuta cada frame cuando la cámara detecta una mano
+hands.onResults((results) => {
+    if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+        const landmarks = results.multiHandLandmarks[0];
+        
+        // Punto 8 de MediaPipe = Punta del dedo índice
+        const indexFingerTip = landmarks[8];
+
+        // CORRECCIÓN EFECTO ESPEJO:
+        // Invertimos el eje X usando (1 - x) para que la mirada sea natural
+        const mirroredX = 1 - indexFingerTip.x;
+        const targetX = mirroredX * window.innerWidth;
+        const targetY = indexFingerTip.y * window.innerHeight;
+
+        movePupilsToTarget(targetX, targetY);
+    }
+});
+
+// 6. Activar / Desactivar Cámara
+async function toggleCamera() {
+    if (!cameraActive) {
+        try {
+            cameraInstance = new Camera(videoElement, {
+                onFrame: async () => {
+                    await hands.send({ image: videoElement });
+                },
+                width: 640,
+                height: 480
+            });
+            await cameraInstance.start();
+            cameraActive = true;
+            toggleBtn.textContent = '🛑 Apagar Cámara';
+            toggleBtn.style.background = '#e94560';
+        } catch (err) {
+            console.error('Error al acceder a la cámara:', err);
+            alert('No se pudo acceder a la cámara. Revisa los permisos de tu navegador.');
+        }
+    } else {
+        if (cameraInstance) {
+            await cameraInstance.stop();
+        }
+        cameraActive = false;
+        toggleBtn.textContent = '📷 Activar Cámara';
+        toggleBtn.style.background = '#0f3460';
+    }
+}
+
+// 7. Síntesis de Voz
+function speak(text, emotion = 'happy') {
+    if ('speechSynthesis' in window) {
+        setEmotion(emotion);
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'es-ES';
+
+        utterance.onstart = () => mouth.classList.add('speaking');
+        utterance.onend = () => {
+            mouth.classList.remove('speaking');
+            setTimeout(() => setEmotion('neutral'), 1000);
+        };
+
+        window.speechSynthesis.speak(utterance);
+    }
+}

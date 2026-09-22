@@ -1,0 +1,1615 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --bg: #050812;
+    --panel: rgba(12, 19, 35, 0.78);
+    --cyan: #45eaff;
+    --cyan-soft: rgba(69, 234, 255, 0.25);
+    --text: #edfaff;
+    --muted: #7f92a8;
+}
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+}
+
+body {
+    min-height: 100dvh;
+
+    background:
+        radial-gradient(
+            circle at 50% 30%,
+            #10233d 0%,
+            transparent 38%
+        ),
+        radial-gradient(
+            circle at 10% 90%,
+            #07182a 0%,
+            transparent 35%
+        ),
+        var(--bg);
+
+    color: var(--text);
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    overflow-x: hidden;
+}
+
+
+/* =========================
+   APP
+========================= */
+
+.app {
+    min-height: 100dvh;
+
+    display: flex;
+    flex-direction: column;
+
+    padding:
+        max(18px, env(safe-area-inset-top))
+        max(16px, env(safe-area-inset-right))
+        max(18px, env(safe-area-inset-bottom))
+        max(16px, env(safe-area-inset-left));
+
+    position: relative;
+
+    isolation: isolate;
+}
+
+
+/* =========================
+   AMBIENTE
+========================= */
+
+.ambient {
+    position: fixed;
+
+    width: 300px;
+    height: 300px;
+
+    border-radius: 50%;
+
+    filter: blur(100px);
+
+    opacity: 0.16;
+
+    pointer-events: none;
+
+    z-index: -1;
+}
+
+.ambient-one {
+    background: #00c8ff;
+
+    top: 5%;
+    left: -120px;
+}
+
+.ambient-two {
+    background: #2856ff;
+
+    right: -140px;
+    bottom: 5%;
+}
+
+
+/* =========================
+   TOPBAR
+========================= */
+
+.topbar {
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    max-width: 1100px;
+
+    margin: 0 auto;
+}
+
+.assistant-name {
+    font-size:
+        clamp(17px, 3vw, 23px);
+
+    font-weight: 700;
+
+    letter-spacing: 4px;
+}
+
+.assistant-status {
+    margin-top: 5px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    font-size: 10px;
+
+    letter-spacing: 2px;
+
+    color: var(--muted);
+}
+
+#statusDot {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: #48ff9a;
+
+    box-shadow:
+        0 0 10px #48ff9a;
+}
+
+
+/* =========================
+   SENSOR — DESACTIVADO
+========================= */
+
+.camera-button.sensor-disabled {
+    display: none !important;
+}
+
+
+/* =========================
+   AVATAR
+========================= */
+
+.avatar-section {
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 390px;
+}
+
+.avatar-stage {
+    position: relative;
+
+    width: min(100%, 900px);
+    min-height: 390px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/*
+    El torso se coloca detrás del rostro.
+    body_cropped.png elimina los márgenes transparentes
+    originales del PNG para que su tamaño CSS coincida
+    con el tamaño visual real del cuerpo.
+*/
+.robot-body {
+    position: absolute;
+
+    width: clamp(280px, 62vw, 360px);
+    height: auto;
+
+    left: 50%;
+    top: 49%;
+
+    transform: translate(-50%, -4%);
+
+    z-index: 2;
+    pointer-events: none;
+
+    opacity: 0.96;
+
+    filter:
+        drop-shadow(
+            0 0 12px
+            rgba(69, 234, 255, 0.12)
+        );
+}
+
+/* =========================
+   ANILLO DEL AVATAR
+========================= */
+
+.avatar-ring {
+    width:
+        clamp(
+            210px,
+            48vw,
+            390px
+        );
+
+    aspect-ratio: 1;
+
+    border-radius: 50%;
+
+    padding:
+        clamp(
+            9px,
+            2vw,
+            15px
+        );
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(69, 234, 255, 0.5),
+            rgba(69, 234, 255, 0.04)
+        );
+
+    box-shadow:
+        0 0 35px
+        rgba(69, 234, 255, 0.18),
+
+        inset 0 0 25px
+        rgba(69, 234, 255, 0.08);
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    position: relative;
+
+    z-index: 5;
+}
+
+.face {
+    width: 100%;
+    height: 100%;
+
+    position: relative;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle at 50% 35%,
+            #172d48 0%,
+            #0c182a 55%,
+            #070e19 100%
+        );
+
+    border:
+        1px solid
+        rgba(69, 234, 255, 0.25);
+
+    box-shadow:
+        inset 0 0 50px
+        rgba(69, 234, 255, 0.08),
+
+        0 0 25px
+        rgba(0, 0, 0, 0.5);
+
+    overflow: hidden;
+}
+
+
+/* =========================
+   MANOS FLOTANTES
+========================= */
+
+.floating-hand {
+    position: absolute;
+
+    width:
+        clamp(
+            62px,
+            10vw,
+            92px
+        );
+
+    height:
+        clamp(
+            82px,
+            13vw,
+            118px
+        );
+
+    z-index: 3;
+
+    pointer-events: none;
+
+    transform-origin: center center;
+
+    --hand-motion-x: 0px;
+    --hand-motion-y: 0px;
+    --hand-motion-rotation: 0deg;
+    --manual-x: 0px;
+    --manual-y: 0px;
+    --manual-rotation: 0deg;
+    --manual-scale: 1;
+
+    filter:
+        drop-shadow(
+            0 0 12px
+            rgba(69, 234, 255, 0.18)
+        );
+
+    transition:
+        transform 0.12s ease-out,
+        opacity 0.3s ease;
+}
+
+
+/* Posición inicial */
+
+.hand-left {
+    left: max(12px, calc(50% - 290px));
+    top: 76%;
+
+    transform:
+        translateY(calc(-50% + var(--hand-motion-y) + var(--manual-y)))
+        translateX(calc(var(--hand-motion-x) + var(--manual-x)))
+        rotate(calc(var(--hand-motion-rotation) + var(--manual-rotation)))
+        scale(var(--manual-scale));
+}
+
+.hand-right {
+    right: max(12px, calc(50% - 290px));
+    top: 76%;
+
+    transform:
+        translateY(calc(-50% + var(--hand-motion-y) + var(--manual-y)))
+        translateX(calc(var(--hand-motion-x) + var(--manual-x)))
+        rotate(calc(var(--hand-motion-rotation) + var(--manual-rotation)))
+        scale(var(--manual-scale));
+}
+
+/* =========================
+   PALMA
+========================= */
+
+.hand-palm {
+    position: absolute;
+
+    left: 50%;
+    bottom: 4px;
+
+    width: 68%;
+    height: 58%;
+
+    transform:
+        translateX(-50%);
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #18324d,
+            #0b1727
+        );
+
+    border:
+        1px solid
+        rgba(69, 234, 255, 0.38);
+
+    box-shadow:
+        inset 0 0 18px
+        rgba(69, 234, 255, 0.08),
+
+        0 0 12px
+        rgba(69, 234, 255, 0.08);
+
+    transition:
+        transform 0.25s ease,
+        height 0.25s ease;
+}
+
+
+/* =========================
+   PULGARES
+========================= */
+
+.hand-thumb {
+    position: absolute;
+
+    width: 23%;
+    height: 30%;
+
+    bottom: 20%;
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(180deg,
+            #21425d,
+            #0d1b2b
+        );
+
+    border:
+        1px solid
+        rgba(69, 234, 255, 0.38);
+
+    box-shadow:
+        inset 0 0 7px
+        rgba(69, 234, 255, 0.08);
+
+    transform-origin: bottom center;
+
+    transition:
+        transform 0.28s ease,
+        height 0.28s ease,
+        bottom 0.28s ease;
+}
+
+.hand-left .hand-thumb {
+    right: 0%;
+    transform: rotate(-38deg);
+}
+
+.hand-right .hand-thumb {
+    left: 0%;
+    transform: rotate(38deg);
+}
+
+
+/* =========================
+   DEDOS
+========================= */
+
+.hand-finger {
+    position: absolute;
+
+    width: 14%;
+
+    height: 43%;
+
+    top: 2%;
+
+    border-radius: 8px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #21425d,
+            #0d1b2b
+        );
+
+    border:
+        1px solid
+        rgba(69, 234, 255, 0.34);
+
+    box-shadow:
+        inset 0 0 7px
+        rgba(69, 234, 255, 0.08);
+
+    transform-origin:
+        bottom center;
+
+    transition:
+        transform 0.28s ease,
+        height 0.28s ease,
+        top 0.28s ease;
+}
+
+
+/*
+    Los cuatro dedos tienen pequeñas
+    diferencias para evitar que parezcan
+    cuatro rectángulos idénticos.
+*/
+
+.finger-1 {
+    left: 13%;
+    height: 38%;
+}
+
+.finger-2 {
+    left: 32%;
+    height: 47%;
+}
+
+.finger-3 {
+    left: 52%;
+    height: 45%;
+}
+
+.finger-4 {
+    left: 72%;
+    height: 35%;
+}
+
+
+/* =========================
+   POSES DE MANOS
+========================= */
+
+
+/*
+    NEUTRAL
+*/
+
+.floating-hand.pose-neutral .hand-finger {
+    transform:
+        rotate(0deg);
+}
+
+
+/*
+    SALUDO
+*/
+
+.floating-hand.pose-wave {
+    /* El movimiento completo lo controla face.js. */
+}
+
+.floating-hand.pose-wave .finger-1 {
+    transform:
+        rotate(-12deg);
+}
+
+.floating-hand.pose-wave .finger-2 {
+    transform:
+        rotate(-5deg);
+}
+
+.floating-hand.pose-wave .finger-3 {
+    transform:
+        rotate(5deg);
+}
+
+.floating-hand.pose-wave .finger-4 {
+    transform:
+        rotate(12deg);
+}
+
+@keyframes handWave {
+
+    from {
+        --manual-y: 0px;
+    }
+
+    to {
+        --manual-y: -5px;
+    }
+}
+
+
+/*
+    HABLANDO
+*/
+
+.floating-hand.pose-talking .hand-finger {
+    animation:
+        fingerTalk 0.7s
+        ease-in-out
+        infinite alternate;
+}
+
+.floating-hand.pose-talking .finger-1 {
+    animation-delay: 0s;
+}
+
+.floating-hand.pose-talking .finger-2 {
+    animation-delay: 0.08s;
+}
+
+.floating-hand.pose-talking .finger-3 {
+    animation-delay: 0.16s;
+}
+
+.floating-hand.pose-talking .finger-4 {
+    animation-delay: 0.24s;
+}
+
+@keyframes fingerTalk {
+
+    from {
+        transform:
+            translateY(0);
+    }
+
+    to {
+        transform:
+            translateY(-5px);
+    }
+}
+
+
+/*
+    SEÑALAR
+*/
+
+.floating-hand.pose-point .finger-1 {
+    height: 55%;
+
+    transform:
+        translateY(-8px);
+}
+
+.floating-hand.pose-point .finger-2,
+.floating-hand.pose-point .finger-3,
+.floating-hand.pose-point .finger-4 {
+    transform:
+        rotate(20deg);
+
+    height: 30%;
+}
+
+
+/*
+    PULGAR ARRIBA
+*/
+
+.floating-hand.pose-thumbup .hand-thumb {
+    bottom: 19%;
+}
+
+.floating-hand.pose-thumbup .hand-finger {
+    height: 28%;
+    top: 19%;
+    transform: rotate(22deg);
+}
+
+.floating-hand.hand-left.pose-thumbup .hand-thumb {
+    transform: rotate(-8deg) translateY(-5px);
+}
+
+.floating-hand.hand-right.pose-thumbup .hand-thumb {
+    transform: rotate(8deg) translateY(-5px);
+}
+
+/*
+    PENSANDO
+*/
+
+.floating-hand.pose-thinking {
+    --manual-rotation: -8deg;
+}
+
+.floating-hand.hand-right.pose-thinking {
+    --manual-rotation: 8deg;
+}
+
+
+/*
+    SORPRESA
+*/
+
+.floating-hand.pose-surprised {
+    --manual-scale: 1.08;
+}
+
+.floating-hand.pose-surprised .hand-finger {
+    height: 49%;
+}
+
+
+/*
+    FELIZ
+*/
+
+.floating-hand.pose-happy {
+    /* El movimiento completo lo controla face.js. */
+}
+
+@keyframes handHappy {
+
+    from {
+        --manual-rotation: -3deg;
+    }
+
+    to {
+        --manual-rotation: 3deg;
+    }
+}
+
+
+/* =========================
+   OJOS
+========================= */
+
+.eye {
+    position: absolute;
+
+    width: 24%;
+    height: 16%;
+
+    top: 36%;
+
+    border-radius: 50%;
+
+    background: #dffcff;
+
+    box-shadow:
+        0 0 15px
+        rgba(69, 234, 255, 0.45);
+
+    overflow: hidden;
+
+    transition:
+        transform 0.15s ease,
+        height 0.12s ease;
+}
+
+.eye-left {
+    left: 19%;
+}
+
+.eye-right {
+    right: 19%;
+}
+
+.pupil {
+    position: absolute;
+
+    width: 31%;
+
+    aspect-ratio: 1;
+
+    border-radius: 50%;
+
+    background: #06111c;
+
+    box-shadow:
+        0 0 6px
+        rgba(69, 234, 255, 0.8);
+
+    left: 50%;
+    top: 50%;
+
+    transform:
+        translate(-50%, -50%);
+}
+
+
+/* =========================
+   CEJAS
+========================= */
+
+.eyebrow {
+    position: absolute;
+
+    width: 25%;
+    height: 3%;
+
+    top: 27%;
+
+    background: #b9e9f2;
+
+    border-radius: 10px;
+
+    --brow-y: 0px;
+    --brow-rotate: 0deg;
+
+    transform:
+        translateY(var(--brow-y))
+        rotate(var(--brow-rotate));
+
+    transition:
+        transform 0.16s ease;
+}
+
+.eyebrow-left {
+    left: 18%;
+}
+
+.eyebrow-right {
+    right: 18%;
+}
+
+
+/* =========================
+   BOCA
+========================= */
+
+.mouth {
+    position: absolute;
+
+    left: 50%;
+    top: 64%;
+
+    width: 17%;
+    height: 4%;
+
+    transform:
+        translateX(-50%);
+
+    border-radius:
+        0 0 30px 30px;
+
+    border-bottom:
+        3px solid var(--cyan);
+
+    transition:
+        width 0.15s ease,
+        height 0.15s ease,
+        border-radius 0.15s ease;
+}
+
+
+/* =========================
+   EMOCIONES
+========================= */
+
+.face.happy .mouth {
+    width: 24%;
+    height: 10%;
+}
+
+.face.surprised .mouth {
+    width: 10%;
+    height: 12%;
+
+    border: 3px solid var(--cyan);
+
+    border-radius: 50%;
+}
+
+.face.thinking .mouth {
+    width: 14%;
+}
+
+.face.angry .eyebrow-left {
+    --brow-rotate: 12deg;
+    --brow-y: 3px;
+}
+
+.face.angry .eyebrow-right {
+    --brow-rotate: -12deg;
+    --brow-y: 3px;
+}
+
+.face.sad .mouth {
+    transform:
+        translateX(-50%)
+        rotate(180deg);
+}
+
+
+/*
+   EXPRESIONES DE CEJAS
+*/
+
+.face.surprised .eyebrow {
+    --brow-y: -6px;
+}
+
+.face.thinking .eyebrow-left {
+    --brow-y: -5px;
+    --brow-rotate: -8deg;
+}
+
+.face.thinking .eyebrow-right {
+    --brow-y: 2px;
+    --brow-rotate: 5deg;
+}
+
+.face.sad .eyebrow-left {
+    --brow-y: 3px;
+    --brow-rotate: 10deg;
+}
+
+.face.sad .eyebrow-right {
+    --brow-y: 3px;
+    --brow-rotate: -10deg;
+}
+
+.face.speaking .eyebrow {
+    animation: eyebrowTalk 0.9s ease-in-out infinite alternate;
+}
+
+@keyframes eyebrowTalk {
+    from {
+        margin-top: 0;
+    }
+    to {
+        margin-top: -2px;
+    }
+}
+
+/* =========================
+   BLINK
+========================= */
+
+.face.blink .eye {
+    height: 2%;
+}
+
+
+/* =========================
+   HABLANDO
+========================= */
+
+.face.speaking .mouth {
+    width: 20%;
+    height: 11%;
+
+    border:
+        2px solid var(--cyan);
+
+    border-radius: 50%;
+
+    animation:
+        talk 0.22s
+        infinite alternate;
+}
+
+@keyframes talk {
+
+    from {
+        transform:
+            translateX(-50%)
+            scaleY(0.55);
+    }
+
+    to {
+        transform:
+            translateX(-50%)
+            scaleY(1);
+    }
+}
+
+
+/* =========================
+   ESCUCHANDO
+========================= */
+
+.face.listening {
+    box-shadow:
+        inset 0 0 55px
+        rgba(69, 234, 255, 0.14),
+
+        0 0 35px
+        rgba(69, 234, 255, 0.18);
+}
+
+.face.listening .mouth {
+    width: 12%;
+}
+
+
+/* =========================
+   ESTADO
+========================= */
+
+.state {
+    margin-top: 18px;
+
+    font-size:
+        clamp(
+            10px,
+            2vw,
+            13px
+        );
+
+    letter-spacing: 3px;
+
+    color: var(--muted);
+
+    text-transform: uppercase;
+}
+
+
+/* =========================
+   EMOCIONES
+========================= */
+
+.emotion-panel {
+    width: 100%;
+    max-width: 900px;
+
+    margin: 0 auto 14px;
+
+    display: flex;
+
+    gap: 8px;
+
+    overflow-x: auto;
+
+    padding: 4px 2px;
+
+    scrollbar-width: none;
+}
+
+.emotion-panel::-webkit-scrollbar {
+    display: none;
+}
+
+.emotion-panel button {
+    flex: 0 0 auto;
+
+    border:
+        1px solid
+        rgba(69, 234, 255, 0.16);
+
+    background:
+        rgba(11, 20, 34, 0.75);
+
+    color: #91a8bc;
+
+    border-radius: 10px;
+
+    padding: 9px 12px;
+
+    font-size: 11px;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.emotion-panel button:hover,
+.emotion-panel button.active {
+    color: var(--cyan);
+
+    border-color:
+        rgba(69, 234, 255, 0.5);
+
+    background:
+        rgba(69, 234, 255, 0.08);
+}
+
+
+/* =========================
+   CHAT
+========================= */
+
+.chat-area {
+    width: 100%;
+    max-width: 900px;
+
+    margin: 0 auto;
+}
+
+.input-wrapper {
+    display: flex;
+
+    gap: 8px;
+
+    padding: 7px;
+
+    border-radius: 17px;
+
+    background:
+        rgba(12, 20, 35, 0.86);
+
+    border:
+        1px solid
+        rgba(69, 234, 255, 0.18);
+
+    box-shadow:
+        0 10px 40px
+        rgba(0, 0, 0, 0.3);
+}
+
+#userInput {
+    min-width: 0;
+
+    flex: 1;
+
+    border: none;
+
+    outline: none;
+
+    background: transparent;
+
+    color: white;
+
+    padding: 11px 10px;
+
+    font-size: 15px;
+}
+
+#userInput::placeholder {
+    color: #65788c;
+}
+
+.voice-button,
+.send-button {
+    width: 43px;
+    height: 43px;
+
+    flex: 0 0 43px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.voice-button {
+    background:
+        rgba(69, 234, 255, 0.08);
+
+    color: var(--cyan);
+}
+
+.send-button {
+    background: var(--cyan);
+
+    color: #031019;
+
+    font-size: 17px;
+
+    font-weight: bold;
+}
+
+.voice-button:hover,
+.send-button:hover {
+    transform:
+        translateY(-1px);
+}
+
+.voice-button.listening {
+    background:
+        rgba(255, 70, 100, 0.18);
+
+    color: #ff718a;
+
+    animation:
+        pulseMic 1s infinite;
+}
+
+@keyframes pulseMic {
+
+    50% {
+        box-shadow:
+            0 0 0 7px
+            rgba(255, 70, 100, 0.08);
+    }
+}
+
+.voice-hint {
+    text-align: center;
+
+    min-height: 16px;
+
+    margin-top: 7px;
+
+    font-size: 10px;
+
+    letter-spacing: 1px;
+
+    color: #5f7185;
+}
+
+
+/* =========================
+   SENSOR VIDEO
+========================= */
+
+#webcam {
+    display: none !important;
+}
+
+
+/* =========================
+   MÓVIL
+========================= */
+
+@media (max-width: 600px) {
+
+    .app {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .avatar-section {
+        min-height: 370px;
+    }
+
+    .avatar-stage {
+        min-height: 370px;
+    }
+
+    .avatar-ring {
+        width:
+            min(
+                65vw,
+                300px
+            );
+    }
+
+    .floating-hand {
+        width: 58px;
+        height: 78px;
+    }
+
+    .robot-body {
+        width: min(72vw, 320px);
+        top: 50%;
+    }
+
+    .hand-left {
+        left: max(4px, calc(50% - 205px));
+        top: 62%;
+    }
+
+    .hand-right {
+        right: max(4px, calc(50% - 205px));
+        top: 62%;
+    }
+
+    .emotion-panel {
+        margin-bottom: 10px;
+    }
+
+    .emotion-panel button {
+        padding: 8px 10px;
+        font-size: 10px;
+    }
+
+    .input-wrapper {
+        border-radius: 14px;
+    }
+
+    #userInput {
+        font-size: 16px;
+    }
+}
+
+
+/* =========================
+   TELÉFONOS MUY PEQUEÑOS
+========================= */
+
+@media (
+    max-height: 700px
+) and (
+    max-width: 600px
+) {
+
+    .avatar-section {
+        min-height: 300px;
+    }
+
+    .avatar-stage {
+        min-height: 300px;
+    }
+
+    .avatar-ring {
+        width:
+            min(
+                52vw,
+                240px
+            );
+    }
+
+    .floating-hand {
+        width: 48px;
+        height: 66px;
+    }
+
+    .robot-body {
+        width: min(70vw, 285px);
+    }
+
+    .hand-left {
+        left: max(2px, calc(50% - 185px));
+    }
+
+    .hand-right {
+        right: max(2px, calc(50% - 185px));
+    }
+
+    .state {
+        margin-top: 8px;
+    }
+
+    .emotion-panel {
+        margin-bottom: 6px;
+    }
+}
+
+
+/* =========================
+   PERMISOS
+========================= */
+
+.permission-panel {
+    position: fixed;
+
+    left: 50%;
+    bottom: 25px;
+
+    transform:
+        translateX(-50%);
+
+    width:
+        min(
+            calc(100% - 30px),
+            430px
+        );
+
+    z-index: 100;
+
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
+}
+
+.permission-panel.hidden {
+    display: none;
+}
+
+.permission-card {
+    padding: 20px;
+
+    border-radius: 18px;
+
+    background:
+        rgba(10, 19, 34, 0.96);
+
+    border:
+        1px solid
+        rgba(69, 234, 255, 0.35);
+
+    box-shadow:
+        0 15px 50px
+        rgba(0, 0, 0, 0.55),
+
+        0 0 30px
+        rgba(69, 234, 255, 0.12);
+
+    backdrop-filter: blur(14px);
+}
+
+.permission-title {
+    color: var(--cyan);
+
+    font-size: 11px;
+
+    letter-spacing: 2px;
+
+    font-weight: bold;
+
+    margin-bottom: 12px;
+}
+
+.permission-text {
+    color: var(--text);
+
+    font-size: 15px;
+
+    line-height: 1.5;
+
+    margin-bottom: 18px;
+}
+
+.permission-actions {
+    display: flex;
+
+    gap: 10px;
+}
+
+.permission-actions button {
+    flex: 1;
+
+    border: none;
+
+    border-radius: 11px;
+
+    padding: 11px;
+
+    font-size: 13px;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.permission-actions button:hover {
+    transform:
+        translateY(-1px);
+}
+
+.permission-deny {
+    background:
+        rgba(255, 255, 255, 0.07);
+
+    color: #a9b9c8;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.12) !important;
+}
+
+.permission-allow {
+    background:
+        var(--cyan);
+
+    color: #031019;
+
+    font-weight: bold;
+
+    box-shadow:
+        0 0 18px
+        rgba(69, 234, 255, 0.18);
+}
+
+/* =========================================================
+   ERLY 1.3.0 — CONFIGURACIÓN Y ANIMACIÓN
+========================================================= */
+
+.settings-button {
+    border: 1px solid rgba(69,234,255,.32);
+    background: rgba(10,20,36,.72);
+    color: var(--text);
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 0 16px rgba(69,234,255,.08);
+}
+
+.settings-button:hover { transform: translateY(-1px); }
+
+.settings-panel {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0,0,0,.45);
+    backdrop-filter: blur(7px);
+}
+
+.settings-panel.hidden { display: none; }
+
+.settings-card {
+    width: min(430px, 100%);
+    padding: 22px;
+    border: 1px solid rgba(69,234,255,.25);
+    border-radius: 20px;
+    background: rgba(8,16,30,.96);
+    box-shadow: 0 18px 60px rgba(0,0,0,.45);
+}
+
+.settings-title {
+    font-size: 13px;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+}
+
+.setting-row {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    color: var(--text);
+    font-size: 14px;
+    border-bottom: 1px solid rgba(255,255,255,.06);
+}
+
+.setting-row input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--cyan); }
+.setting-row input[type="range"] { width: 48%; accent-color: var(--cyan); }
+.range-row { font-size: 13px; }
+
+.settings-close {
+    margin-top: 18px;
+    width: 100%;
+    padding: 11px;
+    border: 0;
+    border-radius: 12px;
+    background: rgba(69,234,255,.12);
+    color: var(--text);
+    cursor: pointer;
+}
+
+/* Las manos parten más abajo, a los lados del torso. */
+.hand-left, .hand-right { top: 84%; }
+
+/* El gesto de pensar puede ponerse delante del rostro solo durante el gesto. */
+.floating-hand.thinking-front { z-index: 8; }
+
+.face.mouth-wide .mouth { transform: translateX(-50%) scaleY(1.45); }
+.face.speaking .mouth { transform-origin: center; }
+
+@media (max-width: 600px) {
+    .floating-hand { width: 68px; height: 90px; }
+    .hand-left { left: 5%; }
+    .hand-right { right: 5%; }
+}
+
+
+/* =========================
+   CHAT VISIBLE — 1.3.2
+========================= */
+.chat-toggle-button {
+    margin-left: auto;
+    margin-right: 8px;
+    border: 1px solid rgba(69, 234, 255, 0.28);
+    background: rgba(10, 19, 34, 0.72);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 8px 11px;
+    font-size: 10px;
+    letter-spacing: 1px;
+    cursor: pointer;
+}
+.chat-toggle-button:hover { transform: translateY(-1px); }
+
+.chat-messages-panel {
+    width: min(100%, 760px);
+    margin: 8px auto 12px;
+    border: 1px solid rgba(69, 234, 255, 0.18);
+    border-radius: 16px;
+    background: rgba(7, 14, 27, 0.78);
+    backdrop-filter: blur(12px);
+    overflow: hidden;
+}
+.chat-messages-panel.hidden { display: none; }
+.chat-messages-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 12px;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.chat-messages-header button {
+    border: 0;
+    background: transparent;
+    color: var(--cyan);
+    cursor: pointer;
+    font-size: 10px;
+}
+.chat-messages {
+    max-height: 260px;
+    overflow-y: auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    scroll-behavior: smooth;
+}
+.message {
+    max-width: 88%;
+    padding: 9px 11px;
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+.message.user {
+    align-self: flex-end;
+    background: rgba(69, 234, 255, 0.12);
+    border: 1px solid rgba(69, 234, 255, 0.16);
+}
+.message.erly {
+    align-self: flex-start;
+    background: rgba(255,255,255,0.055);
+    border: 1px solid rgba(255,255,255,0.08);
+}
+.message.typing::after {
+    content: '▋';
+    margin-left: 2px;
+    animation: erlyCursor 0.8s infinite;
+}
+@keyframes erlyCursor { 50% { opacity: 0; } }
+
+@media (max-width: 600px) {
+    .chat-toggle-button { padding: 7px 8px; font-size: 9px; }
+    .chat-messages { max-height: 220px; }
+}
