@@ -21,6 +21,18 @@ const denyPermission =
 
 
 let pendingAction = null;
+/* =========================
+   ANDROID BRIDGE — APERTURA SEGURA
+========================= */
+function openExternalUrl(url) {
+    const bridge = (typeof window !== "undefined") ? window.ErlyAndroid : null;
+    if (bridge && typeof bridge.openUrl === "function" && /^https?:\/\//i.test(String(url || ""))) {
+        try { bridge.openUrl(String(url)); return true; } catch (e) { console.warn("AndroidBridge openUrl falló:", e); }
+    }
+    return false;
+}
+
+
 
 
 /* =========================
@@ -811,12 +823,8 @@ allowPermission.addEventListener(
             Apertura directa dentro del evento click del usuario.
         */
 
-        const newWindow =
-            window.open(
-                url,
-                "_blank"
-            );
-
+        const openedByAndroid = openExternalUrl(url);
+        const newWindow = openedByAndroid ? true : window.open(url, "_blank");
 
         if (!newWindow) {
 

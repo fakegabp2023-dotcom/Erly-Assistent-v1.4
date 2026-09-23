@@ -303,6 +303,30 @@ function addMessage(text, sender = "erly", progressive = false) {
 
 
 // ============================================================
+// ANDROID / BACKEND BRIDGE
+// ============================================================
+function getErlyBackendUrl() {
+    try {
+        if (window.ErlyAndroid && typeof window.ErlyAndroid.getBackendUrl === "function") {
+            const value = String(window.ErlyAndroid.getBackendUrl() || "").trim();
+            if (value) return value.replace(/\/$/, "");
+        }
+    } catch (e) { console.warn("AndroidBridge backend URL no disponible:", e); }
+
+    try {
+        const saved = String(localStorage.getItem("erlyBackendUrl") || "").trim();
+        if (saved) return saved.replace(/\/$/, "");
+    } catch (_) {}
+
+    return "";
+}
+
+function getErlyChatEndpoint() {
+    const base = getErlyBackendUrl();
+    return base ? base + "/chat" : "/chat";
+}
+
+// ============================================================
 // ENVIAR MENSAJE
 // ============================================================
 
@@ -390,13 +414,14 @@ async function sendMessage() {
 
 
         console.log(
-            "Enviando petición a /chat..."
+            "Enviando petición a:",
+            getErlyChatEndpoint()
         );
 
 
         const response =
             await fetch(
-                "/chat",
+                getErlyChatEndpoint(),
                 {
 
                     method: "POST",

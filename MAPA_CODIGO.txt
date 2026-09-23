@@ -151,3 +151,32 @@ ERLY 1.4 ALPHA — 2026-09-22 — CORRECCIÓN DE RECURSOS ANDROID
 - El `templates/index.html` original NO se modificó, para conservar la versión Flask.
 - No se modificaron todavía `chat.js`, `app.py`, memoria, voz ni AndroidBridge.
 - El siguiente objetivo después de comprobar la interfaz es adaptar la comunicación `/chat` y la integración nativa.
+
+
+============================================================
+ERLY 1.4 ALPHA — ESTADO VERIFICADO 2026-09-22
+============================================================
+- La APK Android compila y se ejecuta en el teléfono de prueba.
+- La interfaz visual de Erly carga correctamente dentro del WebView tras corregir las rutas de assets.
+- La copia Android de index.html usa rutas relativas static/...; templates/index.html sigue reservado para Flask.
+- El siguiente objetivo técnico es conectar el JavaScript con la capa Android y después resolver la comunicación del chat con el backend/IA.
+- No se modifican todavía app.py, memory.py, chat.js ni la lógica de voz/memoria.
+
+GITHUB / HIGIENE DEL REPOSITORIO
+- .gitignore actualizado para excluir .env, .idea/, .gradle/, android/.gradle/, builds, APKs, cachés Python y bases de datos locales.
+- Las carpetas generadas por Android Studio no forman parte del código fuente que se debe versionar.
+
+
+==================================================
+ERLY 1.4 ALPHA — ANDROIDBRIDGE + IA — 2026-09-23
+==================================================
+- MainActivity.java: AndroidBridge ampliado con getBackendUrl(), setBackendUrl(), openUrl(), openApp(), showToast() y speak().
+- chat.js: en Android usa ErlyAndroid.getBackendUrl() para enviar POST /chat al Flask remoto; fuera de Android conserva /chat.
+- settings.js: añade configuración persistente de “Servidor IA”.
+- face.js: TextToSpeech nativo como respaldo cuando Web Speech API no está disponible.
+- permissions.js: las URLs HTTPS/HTTP autorizadas pueden abrirse mediante AndroidBridge antes del fallback del navegador.
+- AndroidManifest.xml: permiso INTERNET y cleartext HTTP habilitado para permitir un Flask local en la red durante desarrollo.
+- La IA y memoria siguen viviendo en app.py/memory.py; el APK se comunica con ese backend.
+- No se incrusta GROQ_API_KEY dentro del APK. El backend conserva la clave mediante .env.
+- Para teléfono físico, el “Servidor IA” debe apuntar a la IP LAN del PC donde corre Flask (por ejemplo http://192.168.x.x:5000) y ambos dispositivos deben estar en la misma red.
+- El proyecto Android generado (.gradle, .idea, build, local.properties) sigue siendo configuración de Android Studio y no debe tratarse como código fuente principal.

@@ -25,3 +25,12 @@ Siguiente paso:
 - Integrar la comunicación con el backend actual.
 - Probar comandos Android nativos.
 - Migrar voz/permisos de forma progresiva.
+
+
+## Integración IA 1.4 Alpha
+
+La interfaz Android conserva el frontend web, pero ahora puede apuntar al backend Flask mediante AndroidBridge. En Configuración aparece “Servidor IA”.
+
+Ejemplo durante desarrollo en red local: `http://IP_DEL_PC:5000`. El PC debe ejecutar Flask y permitir conexiones entrantes en ese puerto.
+
+No pongas la `GROQ_API_KEY` dentro del APK: mantenla en el `.env` del backend.

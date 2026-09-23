@@ -1072,7 +1072,26 @@ document
 
 function speak(text, emotion = "neutral") {
 
-    if (!ERLY_SETTINGS.voice || !text || !("speechSynthesis" in window)) return;
+    if (!ERLY_SETTINGS.voice || !text) return;
+
+    // AndroidBridge: usa TextToSpeech nativo si Web Speech API no está disponible.
+    if (!("speechSynthesis" in window) && window.ErlyAndroid && typeof window.ErlyAndroid.speak === "function") {
+        speakingActive = true;
+        if (face) face.classList.add("speaking");
+        if (ERLY_SETTINGS.gestures && ERLY_SETTINGS.animations) setBothHands("talking");
+        const nativeDone = () => {
+            speakingActive = false;
+            if (face) face.classList.remove("speaking", "mouth-wide");
+            if (ERLY_SETTINGS.gestures && ERLY_SETTINGS.animations) setBothHands("neutral");
+        };
+        try {
+            window.ErlyAndroid.speak(String(text), Number(ERLY_SETTINGS.voiceRate) || 1, Number(ERLY_SETTINGS.voicePitch) || 1);
+            window.setTimeout(nativeDone, Math.max(1200, String(text).length * 55));
+        } catch (_) { nativeDone(); }
+        return;
+    }
+
+    if (!("speechSynthesis" in window)) return;
 
     window.speechSynthesis.cancel();
 
